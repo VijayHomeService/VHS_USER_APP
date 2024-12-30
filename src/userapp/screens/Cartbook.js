@@ -13,6 +13,10 @@ import {
   KeyboardAvoidingView,
   Keyboard,
   Pressable,
+  Animated,
+  UIManager, findNodeHandle,
+  PixelRatio,
+  FlatList,
 } from 'react-native';
 
 import {useFCMToken} from '../../ApiServices/FCMtoken';
@@ -56,15 +60,20 @@ import EvilIcons from 'react-native-vector-icons/EvilIcons';
 import Geolocation from '@react-native-community/geolocation';
 import Loader from './Loader';
 
+
+
 function Cartbook({navigation}) {
+  const flatListRef = useRef(null); 
+ 
+  const scrollViewRef = useRef(null); 
   const MyCartItmes = useSelector(state => state.cart);
   const MyCartaddonItmes = useSelector(state => state.addon);
   const [locationModalVisible, setlocationModalVisible] = useState(false);
   const fcmtoken = useFCMToken();
   const dispatch = useDispatch();
-
+  const [translateY] = useState(new Animated.Value(0));
   console.log('fcmtoken cartbook', fcmtoken);
-
+  const screenRef = useRef();
   const [Carttotal, setCarttotal] = useState(0);
   const [couponDiscount, setCouponDiscount] = useState(0);
 
@@ -161,6 +170,8 @@ function Cartbook({navigation}) {
 
   const [voucherdata, setvoucherdata] = useState([]);
   const [selectedDate, setSelectedDate] = useState(null);
+  const [selectedSlot, setSelectedSlot] = useState(null);
+  const [isSlotModalVisible, setSlotModalVisible] = useState(false);
   const [selectedSlotText, setSelectedSlotText] = useState('');
   const [addondata, setaddondata] = useState([]);
   const bottomSheet = useRef();
@@ -170,7 +181,7 @@ function Cartbook({navigation}) {
   const [user, setuser] = useState('');
   const [value, setuser1] = useState('');
   const [LoginModal, setLoginModal] = useState(false);
-
+ 
   // useEffect(() => {
   //   if (!user) {
   //     setLoginModal(true);
@@ -384,12 +395,14 @@ function Cartbook({navigation}) {
   });
 
   const handleSelectedAddress = i => {
+    setChecked(i);
     setFulladd(i);
     setMarkerCoordinate({
       latitude: i.markerCoordinate?.latitude,
       longitude: i.markerCoordinate?.longitude,
     });
   };
+ 
 
   const mapRef = useRef(null);
 
@@ -475,11 +488,52 @@ function Cartbook({navigation}) {
     setcalenderModel(false);
   };
 
-  const handleTabClick = date => {
+
+
+
+ 
+  
+  const scrollToPosition = () => {
+    UIManager.dispatchViewManagerCommand(
+      findNodeHandle(this),
+      UIManager.RCTView.Commands.scrollTo,
+      [0, 50], // Adjust to scroll by 100px
+    );
+  };
+  const [selectedIndex, setSelectedIndex] = useState(null); 
+  const handleTabClick = (date) => {
+  
     const formattedDate = date.format('YYYY-MM-DD');
     setSelectedDate(formattedDate);
+    setSlotModalVisible(true);
+      scrollToNext(); 
+    console.log('Selected date:', formattedDate); 
+    
+  
+  };
+  const scrollToNext = (index) => {
+    if (scrollViewRef.current) {
+      scrollViewRef.current.scrollTo({ y: 100, animated: true }); 
+    }
   };
 
+   
+   const renderItem = ({ item, index }) => (
+    <TouchableOpacity
+      style={{
+        padding: 15,
+        backgroundColor: 'lightgray',
+        marginVertical: 5,
+        borderRadius: 5,
+        alignItems: 'center',
+      }}
+      onPress={() => handleTabClick(item, index)}
+    >
+      <Text style={{ fontSize: 16, color: 'black' }}>
+        {item.label}: {item.date}
+      </Text>
+    </TouchableOpacity>
+  );
   const isTabActive = tab => {
     return selectedDate === tab;
   };
@@ -523,14 +577,14 @@ function Cartbook({navigation}) {
     fetchData();
   }, []);
 
-  const [suman, setSuman] = useState('');
+  const [vijay, setVijay] = useState('');
   useEffect(() => {
     // Fetch user data from AsyncStorage and parse it
     const fetchData1 = async () => {
       try {
         const userData = await AsyncStorage.getItem('usedVoucherCodes');
         if (userData) {
-          setSuman(JSON.parse(userData));
+          setVijay(JSON.parse(userData));
         }
       } catch (error) {
         console.error('Error fetching user data: ', error);
@@ -631,10 +685,12 @@ function Cartbook({navigation}) {
   };
 
   const handleSlotClick1 = (index, startTime) => {
+    
     setSelectedSlotIndex(index);
     setSelectedSlotText(`${startTime}`);
+    setSelectedSlot(`${startTime}`); 
   };
-
+  
   const filteredData =
     MyCartItmes[0]?.service?.store_slots?.filter(
       item => item.slotCity === savecity,
@@ -1480,6 +1536,7 @@ function Cartbook({navigation}) {
         <Loader />
       ) : (
         <View style={{flex: 1}}>
+         
           {showWebView ? (
             <View style={{flex: 1}}>
               <Text
@@ -1687,6 +1744,7 @@ function Cartbook({navigation}) {
                               const isItemInCart = !!cartItem;
 
                               return (
+                                
                                 <View
                                   key={i.addOnsId} // Add a unique key for each item in the map function
                                   style={{
@@ -1849,8 +1907,12 @@ function Cartbook({navigation}) {
                       <></>
                     )}
 
+
+                   
                     <View style={styles.container}>
-                      <View style={{margin: 15}}>
+                    
+                      <View style={{margin: 15, marginTop: -10,flex:1}} ref={screenRef}>
+                      
                         <Text
                           style={{
                             color: 'black',
@@ -1868,7 +1930,11 @@ function Cartbook({navigation}) {
                                 backgroundColor: 'darkred',
                               },
                             ]}
-                            onPress={() => handleTabClick(today)}>
+                            onPress={() => 
+                            
+                              handleTabClick(today)
+                              
+                            }>
                             <Text
                               style={[
                                 styles.box3,
@@ -1888,7 +1954,11 @@ function Cartbook({navigation}) {
                                 backgroundColor: 'darkred',
                               },
                             ]}
-                            onPress={() => handleTabClick(tomorrow)}>
+                            onPress={() =>
+                            handleTabClick(tomorrow)
+                    
+                             
+                            }>
                             <Text
                               style={[
                                 styles.box3,
@@ -1908,7 +1978,11 @@ function Cartbook({navigation}) {
                                 backgroundColor: 'darkred',
                               },
                             ]}
-                            onPress={() => handleTabClick(nextTwoDays)}>
+                            onPress={() => 
+                              handleTabClick(nextTwoDays)
+                             
+                             
+                            }>
                             <Text
                               style={[
                                 styles.box3,
@@ -1923,7 +1997,9 @@ function Cartbook({navigation}) {
                             </Text>
                           </TouchableOpacity>
                         </View>
+                        
                       </View>
+                     
                       <View style={{margin: 15, flexDirection: 'row'}}>
                         <TouchableOpacity
                           style={[
@@ -1932,7 +2008,10 @@ function Cartbook({navigation}) {
                               backgroundColor: 'darkred',
                             },
                           ]}
-                          onPress={() => handleTabClick(nextthreeDays)}>
+                          onPress={() => 
+                            handleTabClick(nextthreeDays)
+                        
+                          }>
                           <Text
                             style={[
                               styles.box3,
@@ -1958,12 +2037,12 @@ function Cartbook({navigation}) {
                                   color="black"
                                   style={{paddingRight: 10}}
                                 />
-                                <Text> Select a date</Text>
+                                <Text>Select a date</Text>
                               </View>
                             ) : (
                               <View style={styles.date}>
                                 <Text
-                                  style={{fontWeight: 'bold', color: 'white'}}>
+                                  style={{fontWeight: 'bold', color: 'black'}}>
                                   {selectedDate}
                                 </Text>
                               </View>
@@ -1971,78 +2050,170 @@ function Cartbook({navigation}) {
                           </View>
                         </TouchableOpacity>
                       </View>
-                      <View style={{padding: 10}}>
-                        {selectedDate ? (
-                          <View>
-                            <Text
-                              style={{
-                                color: 'black',
-                                // backgroundColor: '#41f4ee',
-                                // width: 150,
-                                // borderTopRightRadius: 80,
-                                // padding: 3,
-                                fontSize: 18,
-                                fontWeight: 'bold',
-                                marginBottom: 10,
-                              }}>
-                              {' '}
-                              Select the Time
-                            </Text>
-                            {renderSlots().length > 0 ? (
-                              // setModalVisible(true),
-                              renderSlots()
-                            ) : (
-                              <Text
-                                style={{
-                                  marginLeft: 10,
-                                  color: 'grey',
-                                  marginTop: 10,
-                                  fontWeight: 'bold',
-                                  fontSize: 16,
-                                }}>
-                                No slots available in this date
-                              </Text>
-                            )}
-                          </View>
-                        ) : (
-                          <></>
-                        )}
-                      </View>
-                      <View style={{paddingLeft: 15}}>
-                        <Text
-                          style={{
-                            color: 'black',
-                            // backgroundColor: '#41f4ee',
-                            // width: 180,
-                            // borderTopRightRadius: 80,
-                            // padding: 3,
-                            fontSize: 18,
-                            fontWeight: 'bold',
-                          }}>
-                          {' '}
-                          Select the address
-                        </Text>
-                      </View>
+    
+                      <Modal
+  animationType="slide"
+  transparent={true}
+  visible={isSlotModalVisible}
+  onRequestClose={() => setSlotModalVisible(false)}
+>
+  <View
+    style={{
+      position: 'absolute',
+      bottom: 0,
+      backgroundColor: 'white',
+      width: '100%',
+      elevation: 15,
+      borderRadius: 10,
+      height: 'auto',
+    }}
+  >
+    
+    <TouchableOpacity
+      onPress={() => setSlotModalVisible(false)}
+      style={{
+        alignSelf: 'flex-end',
+        borderWidth: 1,
+        borderRadius: 50,
+        borderColor: 'gray',
+        padding: 5,
+      }}
+    >
+      <Feather name="x" color="black" size={29} />
+    </TouchableOpacity>
 
-                      <TouchableOpacity
-                        style={styles.address}
-                        onPress={() => {
-                          // handleAddressSelection();
-                          setModalVisible(true);
-                        }}>
-                        <View style={{flex: 0.9}}>
-                          <Text numberOfLines={1} style={{color: 'black'}}>
-                            {Fulladd?.address ||
-                            Fulladd?.platNo ||
-                            Fulladd?.landmark
-                              ? `${Fulladd?.address}, `
-                              : 'Select the address'}
-                          </Text>
-                        </View>
-                        <View style={{flex: 0.1}}>
-                          <Entypo name="location-pin" size={20} />
-                        </View>
-                      </TouchableOpacity>
+    <View style={{ margin: 15 }}>
+      
+      <View>
+        <Text style={styles.bd}>Select a Slot</Text>
+        <View style={{ height: 1, backgroundColor: 'lightgray', marginTop: 15 }} />
+        {renderSlots()} 
+      </View>
+
+     
+      
+
+      
+      
+
+      
+      <View>
+        <Text style={styles.bd}>Select Your Address</Text>
+        <View style={{ height: 1, backgroundColor: 'lightgray', marginTop: 15 }} />
+        {customeraddress.map(i => (
+          <TouchableOpacity
+            style={{ flexDirection: 'row', marginTop: 15 }}
+            onPress={() => {
+              setChecked(i);
+              handleSelectedAddress(i);
+              bottomSheet.current.show();
+              setSlotModalVisible(false);
+            }}
+          >
+            <View style={{ flex: 0.15 }}>
+              <RadioButton
+                value={i}
+                status={checked === i ? 'checked' : 'unchecked'}
+                onPress={() => {
+                  setChecked(i);
+                  handleSelectedAddress(i);
+                  bottomSheet.current.show();
+                   setSlotModalVisible(false);
+                }}
+              />
+            </View>
+            <View style={{ flex: 0.85 }}>
+              <View style={{ flexDirection: 'row' }}>
+                <Text
+                  style={{
+                    color: 'black',
+                    fontWeight: 'bold',
+                    fontSize: 17,
+                  }}
+                >
+                  {i.saveAs === 'other' ? i.otherData : i.saveAs}
+                </Text>
+              </View>
+              <Text style={{ fontSize: 13, color: 'black' }}>
+                {i.platNo}, {i.landmark}, {i.address}
+              </Text>
+            </View>
+          </TouchableOpacity>
+        ))}
+
+        <View
+          style={{
+            height: 1,
+            backgroundColor: 'lightgray',
+            marginVertical: 15,
+          }}
+        />
+        <TouchableOpacity
+          onPress={mapModal}
+          style={{
+            flexDirection: 'row',
+            marginRight: 10,
+            marginTop: 15,
+          }}
+        >
+          <AntDesign
+            name="plus"
+            size={16}
+            style={{ color: 'darkred', marginTop: 2 }}
+          />
+          <Text
+            style={{
+              marginLeft: 10,
+              color: 'darkred',
+              fontWeight: '600',
+              fontSize: 15,
+            }}
+          >
+            Add New Address
+          </Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+
+    
+    <TouchableOpacity
+      onPress={() => {
+        console.log('Selected Slot:', selectedSlot);
+        console.log('Selected Address:', checked);
+        if (selectedSlot && checked) {
+          setSlotModalVisible(false);
+       
+          
+        } else {
+          alert('Please select both a slot and an address');
+        }
+      }}
+      style={{
+        justifyContent: 'center',
+        alignItems: 'center',
+      }}
+    >
+      <Text
+        style={{
+          color: 'white',
+          padding: 10,
+          textAlign: 'center',
+          backgroundColor: 'darkred',
+          marginTop: 30,
+          width: '90%',
+          borderRadius: 7,
+          justifyContent: 'center',
+          alignItems: 'center',
+          marginBottom: 10,
+        }}
+      >
+        Proceed
+      </Text>
+    </TouchableOpacity>
+  </View>
+</Modal>
+                      
+                  
 
                       {user?.customerName || user?.email ? (
                         <></>
@@ -2104,8 +2275,12 @@ function Cartbook({navigation}) {
                             />
                           </View>
                         </View>
+                        
                       )}
                     </View>
+                    
+                    
+                   
                     {voucherdata.length > 0 ? (
                       <View
                         style={{
@@ -2268,7 +2443,7 @@ function Cartbook({navigation}) {
 
                       <View style={{flexDirection: 'row', margin: 10}}>
                         <View style={{flex: 0.8}}>
-                          <Text style={styles.summarytext}>GST (18%)</Text>
+                          <Text style={styles.summarytext}>Taxes and Fee</Text>
                         </View>
                         <View style={{flex: 0.2, alignItems: 'flex-end'}}>
                           <View style={{flexDirection: 'row'}}>
@@ -2588,208 +2763,283 @@ function Cartbook({navigation}) {
                     </Pressable>
                   )}
 
-                  <View>
-                    <BottomSheet
-                      hasDraggableIcon
-                      ref={bottomSheet}
-                      height={200}
-                      style={{backgroundColor: 'white'}}>
-                      <View style={{}}>
+<View>
+  <BottomSheet
+    hasDraggableIcon
+    ref={bottomSheet}
+    height={600}
+    style={{backgroundColor: 'white'}}
+  >
+    <View>
+      <View
+        style={{
+          backgroundColor: 'white',
+          marginTop: 20,
+          paddingLeft: 15,
+        }}
+      >
+       
+        
+         <View style={{flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10, marginTop: 10}}>
+          <Text style={{fontSize: 14, color: 'black'}}>
+            Selected Date: <Text style={{fontWeight: 'bold'}}>{selectedDate}</Text>
+          </Text>
+          <TouchableOpacity onPress={() => bottomSheet.current.close()}>
+            <Feather name="edit" color="grey" size={16} marginRight={5} />
+          </TouchableOpacity>
+        </View>
+
+        
+        <View style={{flexDirection: 'row', justifyContent: 'space-between', marginBottom: 20}}>
+          <Text style={{fontSize: 14, color: 'black'}}>
+            Selected Slot: <Text style={{fontWeight: 'bold'}}>{selectedSlot || 'None'}</Text>
+          </Text>
+          <TouchableOpacity onPress={() => setSlotModalVisible(true)}>
+            <Feather name="edit" color="grey" size={16} marginRight={5} />
+          </TouchableOpacity>
+        </View>
+        <Text
+          style={{
+            color: 'black',
+            backgroundColor: 'rgb(214, 202, 140)',
+            width: 180,
+            borderTopRightRadius: 80,
+            padding: 3,
+            fontSize: 18,
+            fontWeight: 'bold',
+          }}
+        >
+          Payment summary
+        </Text>
+
+        {/* Total Amount */}
+        <View style={{flexDirection: 'row', margin: 10}}>
+          <View style={{flex: 0.8}}>
+            <Text style={styles.summarytext}>Total Amount</Text>
+          </View>
+          <View style={{flex: 0.2, alignItems: 'flex-end'}}>
+            <View style={{flexDirection: 'row', textDecorationLine: 'line-through'}}>
+              <FontAwesome
+                name="rupee"
+                color="black"
+                size={14}
+                style={{marginTop: 3}}
+              />
+              <Text
+                style={{
+                  textDecorationLine: 'line-through',
+                  color: 'black',
+                }}
+              >
+                {Carttotal1 + totaladdon1}
+              </Text>
+            </View>
+          </View>
+        </View>
+
+       
+        <View style={{flexDirection: 'row', margin: 10}}>
+          <View style={{flex: 0.8}}>
+            <Text style={styles.summarytext}>Discount</Text>
+          </View>
+          <View style={{flex: 0.2, alignItems: 'flex-end'}}>
+            <View style={{flexDirection: 'row'}}>
+              <Text style={styles.summarytext}>
+                {couponDiscount !== Carttotal && appliedCoupon
+                  ? `${appliedCoupon.discountPercentage}%`
+                  : '0%'}
+              </Text>
+            </View>
+          </View>
+        </View>
+
+        
+        <View style={{flexDirection: 'row', margin: 10}}>
+          <View style={{flex: 0.8}}>
+            <Text style={styles.summarytext}>Taxes and Fee</Text>
+          </View>
+          <View style={{flex: 0.2, alignItems: 'flex-end'}}>
+            <View style={{flexDirection: 'row'}}>
+              <Text style={styles.summarytext}>{finalGST}</Text>
+            </View>
+          </View>
+        </View>
+
+        
+        <View style={{flexDirection: 'row', margin: 10}}>
+          <View style={{flex: 0.8}}>
+            <Text style={styles.summarytext}>Saved</Text>
+          </View>
+          <View style={{flex: 0.2, alignItems: 'flex-end'}}>
+            <View style={{flexDirection: 'row'}}>
+              <FontAwesome
+                name="rupee"
+                color="rgb(30,135,226)"
+                size={14}
+                style={{marginTop: 3}}
+              />
+              <Text style={{color: 'rgb(30,135,226)'}}>
+                {CartSavedtotal + FreqensaveAmt1}
+              </Text>
+            </View>
+          </View>
+        </View>
+
+        
+        {voucherCode ? (
+          <View style={{flexDirection: 'row', margin: 10}}>
+            <View style={{flex: 0.5}}>
+              <Text style={styles.summarytext}>Coupon Code</Text>
+            </View>
+            <View style={{flex: 0.5, alignItems: 'flex-end'}}>
+              <View style={{flexDirection: 'row'}}>
+                <Text style={{fontSize: 12, color: 'green'}}>
+                  {voucherCode ? voucherCode : ''}
+                </Text>
+              </View>
+            </View>
+          </View>
+        ) : null}
+
+        
+        {discountAmount && couponDiscount + total1 >= 1500 ? (
+          <View style={{flexDirection: 'row', margin: 5}}>
+            <View style={{flex: 0.5, flexDirection: 'row'}}>
+              <Checkbox
+                status={isSelected ? 'checked' : 'unchecked'}
+                onPress={handlePress}
+              />
+              <Text
+                style={{
+                  marginTop: 10,
+                  fontWeight: '500',
+                  color: 'black',
+                }}
+              >
+                Use wallet balance
+              </Text>
+            </View>
+            <View style={{flex: 0.5, alignItems: 'flex-end'}}>
+              <Text
+                style={{
+                  fontSize: 15,
+                  color: 'green',
+                  marginRight: 5,
+                }}
+              >
+                {discountAmount ? discountAmount.toFixed(2) : ''}
+              </Text>
+            </View>
+          </View>
+        ) : null}
+
+        <Text
+          style={{
+            borderBottomWidth: 1,
+            borderColor: 'lightgray',
+          }}
+        ></Text>
+
+        {/* Grand Total */}
+        <View style={{flexDirection: 'row', margin: 10}}>
+          <View style={{flex: 0.8}}>
+            <Text
+              style={{
+                fontSize: 18,
+                color: 'black',
+                fontWeight: 'bold',
+              }}
+            >
+              Grand Total
+            </Text>
+            <Text
+              style={{
+                fontSize: 12,
+                color: 'grey',
+              }}
+            >
+              (inc. Taxes & Other Charges)
+            </Text>
+      
+          </View>
+       
+          <View style={{flex: 0.25, alignItems: 'flex-end',flexDirection: 'row', alignItems: 'center'}}>
+            <FontAwesome
+              name="rupee"
+              color="black"
+              size={18}
+              style={{ marginRight: 2}}
+            />
+            <Text
+              style={{
+                fontSize: 18,
+                color: 'black',
+                fontWeight: 'bold',
+              }}
+            >
+              {finalGrandTotal}
+            </Text>
+          </View>
+        </View>
+        <View>
+          <TouchableOpacity
+                        style={{
+                          backgroundColor: 'white',
+                          // elevation: 3,
+                          borderRadius: 5,
+                          padding: 10,
+                          margin: 2,
+                          marginTop: -10,
+                        }}
+                        onPress={() => setcancelationModel(true)}>
                         <Text
                           style={{
-                            color: 'black',
-                            fontSize: 18,
-                            fontWeight: 'bold',
-                            textAlign: 'center',
-                            marginTop: 10,
-                            borderBottomWidth: 1,
-                            borderColor: '#eee',
-                            paddingBottom: 15,
+                            fontSize: 15,
+                            color: 'darkred',
+                            fontWeight: '700',
                           }}>
-                          Select Payment Type
+                          Cancellation Policy
                         </Text>
+                      </TouchableOpacity>
+          </View>
+        {/* Payment Type */}
+        <Text
+          style={{
+            color: 'black',
+            fontSize: 18,
+            fontWeight: 'bold',
+            textAlign: 'center',
+            marginTop: 10,
+            borderBottomWidth: 1,
+            borderColor: '#eee',
+            paddingBottom: 15,
+          }}
+        >
+          Select Payment Type
+        </Text>
 
-                        <View
-                          style={{
-                            flexDirection: 'row',
-                            margin: 10,
-                          }}>
-                          <TouchableOpacity
-                            style={styles.paymentrow}
-                            onPress={handleSubmit1}>
-                            <Image
-                              source={require('../../../assets/mastercard.png')}
-                              style={styles.mastercardimg}
-                            />
-                            <Text style={styles.mastercardtext}>Pay now</Text>
-                          </TouchableOpacity>
-                          <TouchableOpacity
-                            style={styles.paymentrow}
-                            onPress={addtreatmentdetails}>
-                            <Image
-                              source={require('../../../assets/cash.png')}
-                              style={styles.mastercardimg}
-                            />
-                            <Text style={styles.mastercardtext}>
-                              After Service
-                            </Text>
-                          </TouchableOpacity>
-                        </View>
-                      </View>
-                    </BottomSheet>
-                  </View>
+        {/* Payment Options */}
+        <View style={{flexDirection: 'row', margin: 10}}>
+          <TouchableOpacity
+            style={styles.paymentrow}
+            onPress={handleSubmit1}
+          >
+            
+            <Text style={styles.mastercardtext}>Pay now</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.paymentrow3}
+            onPress={addtreatmentdetails}
+          >
+            
+            <Text style={styles.mastercardtext}>Pay After Service</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    </View>
+  </BottomSheet>
+</View>
 
-                  <View style={styles.centeredView}>
-                    <Modal
-                      animationType="slide"
-                      transparent={true}
-                      visible={modalVisible}
-                      onRequestClose={() => {
-                        setModalVisible(false);
-                      }}>
-                      <View
-                        style={{
-                          position: 'absolute',
-                          bottom: 0,
-                          backgroundColor: 'white',
-                          width: '100%',
-                          elevation: 15,
-                          borderRadius: 10,
-                          height: 'auto',
-                        }}>
-                        <TouchableOpacity
-                          onPress={() => {
-                            setModalVisible(false);
-                          }}
-                          style={{
-                            alignSelf: 'flex-end',
-                            backgroundColor: '',
-                            borderWidth: 1,
-                            borderRadius: 50,
-                            borderColor: 'gray',
-                            padding: 5,
-                          }}>
-                          <Feather name="x" color="black" size={29} />
-                        </TouchableOpacity>
-                        <View style={{margin: 15}}>
-                          <View>
-                            <Text style={styles.bd}>Select your address</Text>
-                          </View>
-                          <View
-                            style={{
-                              height: 1,
-                              backgroundColor: 'lightgray',
-                              marginTop: 15,
-                            }}
-                          />
-                          {customeraddress.map(i => (
-                            <TouchableOpacity
-                              style={{flexDirection: 'row', marginTop: 15}}
-                              onPress={() => {
-                                setChecked(i);
-
-                                handleSelectedAddress(i);
-                                bottomSheet.current.show();
-                                setModalVisible(false);
-                              }}>
-                              <View style={{flex: 0.15}}>
-                                <RadioButton
-                                  value={i}
-                                  status={
-                                    checked === i ? 'checked' : 'unchecked'
-                                  }
-                                  onPress={() => {
-                                    setChecked(i);
-
-                                    handleSelectedAddress(i);
-                                    bottomSheet.current.show();
-                                    setModalVisible(false);
-                                  }}
-                                />
-                              </View>
-
-                              <View style={{flex: 0.85}}>
-                                <View style={{flexDirection: 'row'}}>
-                                  <Text
-                                    style={{
-                                      color: 'black',
-                                      fontWeight: 'bold',
-                                      fontSize: 17,
-                                    }}>
-                                    {i.saveAs === 'other'
-                                      ? i.otherData
-                                      : i.saveAs}
-                                  </Text>
-                                </View>
-                                <Text style={{fontSize: 13, color: 'black'}}>
-                                  {i.platNo},{i.landmark},{i.address}
-                                </Text>
-                              </View>
-                            </TouchableOpacity>
-                          ))}
-                          <View
-                            style={{
-                              height: 1,
-                              backgroundColor: 'lightgray',
-                              marginTop: 15,
-                            }}
-                          />
-                          <TouchableOpacity
-                            onPress={mapModal}
-                            style={{
-                              flexDirection: 'row',
-                              marginRight: 10,
-                              marginTop: 15,
-                            }}>
-                            <AntDesign
-                              name="plus"
-                              size={16}
-                              style={{color: 'darkred', marginTop: 2}}
-                            />
-
-                            <Text
-                              style={{
-                                marginLeft: 10,
-                                color: 'darkred',
-                                fontWeight: '600',
-                                fontSize: 15,
-                              }}>
-                              Add new address
-                            </Text>
-                          </TouchableOpacity>
-                        </View>
-                        <TouchableOpacity
-                          onPress={() => {
-                            if (checked && Fulladd) {
-                              setModalVisible(false);
-                              bottomSheet.current.show();
-                            } else {
-                              alert('Please select an address');
-                            }
-                          }}
-                          style={{
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                          }}>
-                          <Text
-                            style={{
-                              color: 'white',
-                              padding: 10,
-                              textAlign: 'center',
-                              backgroundColor: 'darkred',
-                              marginTop: 30,
-                              width: '90%',
-                              borderRadius: 7,
-                              justifyContent: 'center',
-                              alignItems: 'center',
-                              marginBottom: 10,
-                            }}>
-                            Proceed
-                          </Text>
-                        </TouchableOpacity>
-                      </View>
-                    </Modal>
-                  </View>
 
                   <View style={styles.centeredView}>
                     <Modal
@@ -3195,9 +3445,12 @@ function Cartbook({navigation}) {
               )}
             </View>
           )}
+         
         </View>
       )}
+      
     </View>
+    
   );
 }
 
@@ -3350,10 +3603,12 @@ const styles = StyleSheet.create({
     resizeMode: 'cover',
   },
   mastercardtext: {
-    color: 'black',
+    color: 'white',
     fontSize: 16,
     marginLeft: 10,
+    fontWeight: 'bold',
   },
+ 
   paymentrow: {
     flex: 0.5,
     flexDirection: 'row',
@@ -3366,7 +3621,21 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     marginRight: 10,
     elevation: 15,
-    backgroundColor: 'white',
+    backgroundColor: '#040458DB',
+  },
+  paymentrow3: {
+    flex: 0.5,
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: 'lightgrey',
+    justifyContent: 'center',
+    borderRadius: 5,
+    padding: 10,
+    marginLeft: 10,
+    marginRight: 10,
+    elevation: 15,
+    backgroundColor: '#8B0000',
   },
   paymentrow1: {
     flex: 0.5,
@@ -3721,6 +3990,63 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     color: 'black',
     fontFamily: 'Poppins-Medium',
+  },
+  container: {
+    flex: 1,
+    backgroundColor: 'white',
+  },
+  title: {
+    color: 'black',
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalContent: {
+    width: '80%',
+    backgroundColor: 'white',
+    borderRadius: 10,
+    padding: 20,
+    alignItems: 'center',
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 20,
+  },
+  slot: {
+    padding: 10,
+    borderWidth: 1,
+    borderColor: 'gray',
+    borderRadius: 5,
+    marginVertical: 5,
+    width: '100%',
+    alignItems: 'center',
+  },
+  slotText: {
+    fontSize: 16,
+    color: 'black',
+  },
+  closeButton: {
+    marginTop: 20,
+    backgroundColor: 'darkred',
+    padding: 10,
+    borderRadius: 5,
+  },
+  closeButtonText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  selectedSlotText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: 'black',
   },
 });
 

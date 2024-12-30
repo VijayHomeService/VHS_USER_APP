@@ -5,6 +5,7 @@ import Video from 'react-native-video';
 import {useRoute} from '@react-navigation/native';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
+
 function Successpage({navigation}) {
   const route = useRoute();
   const {data} = route.params;
@@ -171,6 +172,8 @@ function Successpage({navigation}) {
       ) : (
         <></>
       )}
+
+
 
       <TouchableOpacity
         onPress={() => navigation.navigate('tab')}

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   TouchableOpacity,
@@ -76,6 +76,22 @@ const CustomTabBar = ({state, descriptors, navigation}) => {
       });
   };
 
+  const [currentService, setCurrentService] = useState('Painting Services');
+  const services = ['Painting Services', 'Cleaning Services', 'Pest Control'];
+
+  
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentService((prevService) => {
+        const currentIndex = services.indexOf(prevService);
+        return services[(currentIndex + 1) % services.length];
+      });
+    }, 3000); 
+
+    
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <View style={styles.container}>
       <View style={styles.tabBar}>
@@ -99,21 +115,21 @@ const CustomTabBar = ({state, descriptors, navigation}) => {
               break;
             case 'booking':
               iconComponent = (
+                <View style={{ paddingLeft: -10 }}>
                 <SimpleLineIcons
                   name="handbag"
                   size={23}
                   color={isFocused ? '#e91e63' : '#222'}
                 />
+                </View>
               );
               label = 'Booking';
               break;
             case 'XO':
               iconComponent = (
-                <Fontisto
-                  name="shopping-sale"
-                  size={23}
-                  color={isFocused ? '#e91e63' : '#222'}
-                />
+                <View style={styles.circle1}>
+                <Text style={styles.text}>{currentService}</Text>
+              </View>
                 // <Image
                 //   source={require('../../../assets/Images/sale.png')}
                 //   style={{
@@ -124,12 +140,7 @@ const CustomTabBar = ({state, descriptors, navigation}) => {
                 //   }}
                 // />
               );
-              label = (
-                <Text>
-                  <Text style={styles.labelX}>X</Text>
-                  <Text style={styles.labelO}>O</Text>
-                </Text>
-              );
+              
               break;
             // default:
             //   iconComponent = (
@@ -190,13 +201,14 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     height: 58,
     backgroundColor: 'white',
+   
+    
   },
   tabBar: {
     flexDirection: 'row',
     justifyContent: 'space-around',
     alignItems: 'center',
     flex: 1,
-    backgroundColor: '#fff',
     position: 'relative',
     overflow: 'hidden',
   },
@@ -236,6 +248,25 @@ const styles = StyleSheet.create({
     color: 'blue',
     fontFamily: 'Poppins-Bold',
     fontSize: 13,
+  },
+  circle1: {
+    width: 50,
+    height: 50,
+    borderRadius: 50,
+    backgroundColor: '#8B0000',
+    justifyContent: 'center',
+    alignItems: 'center',
+    
+      marginTop: 15, 
+    marginBottom: -2, 
+    
+  },
+  text: {
+    color: 'white',
+    fontWeight: 'bold',
+    textAlign: 'center',
+    fontSize: 8,
+    paddingHorizontal: 5,
   },
 });
 

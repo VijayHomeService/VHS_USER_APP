@@ -24,6 +24,7 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Feather from 'react-native-vector-icons/Feather';
 import {useFCMToken} from '../../ApiServices/FCMtoken';
 import Geocoder from 'react-native-geocoding';
+import Video from 'react-native-video';
 
 import {Linking} from 'react-native';
 
@@ -465,6 +466,8 @@ function Home({navigation}) {
     getCurrentLocation();
   }, []);
 
+  const { height } = Dimensions.get('window');
+
   return (
     <View style={{flex: 1, backgroundColor: 'white'}}>
       <StatusBar backgroundColor="darkred" barStyle="light-content" />
@@ -473,21 +476,24 @@ function Home({navigation}) {
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
           }>
-          <View style={styles.container}>
-            <Image
-              source={require('../../../assets/Banner1.jpg')}
-              style={{
-                width: '100%',
-                height: 60,
-              }}
-            />
+          <View style={styles.container} >
+          <View style={{ height: 500 }}>
+          <Video
+        source={require('../../../assets/new_year_bg.mp4')} 
+        style={StyleSheet.absoluteFill}  
+        resizeMode="cover" 
+        repeat 
+        muted 
+        autoplay 
+      />
+
             <View
               style={{
                 flexDirection: 'row',
                 padding: 15,
                 elevation: 1,
 
-                backgroundColor: 'white',
+                backgroundColor: 'transparent',
               }}>
               <Pressable
                 style={{flex: 0.8}}
@@ -500,7 +506,7 @@ function Home({navigation}) {
                     padding: 5,
                     width: 140,
                     borderRadius: 5,
-                    borderColor: 'grey',
+                    borderColor: 'transparent',
                     backgroundColor: 'white',
                   }}>
                   <Feather
@@ -525,7 +531,7 @@ function Home({navigation}) {
                 <TouchableOpacity
                   onPress={() => navigation.navigate('wallet')}
                   style={{marginRight: 10}}>
-                  <Entypo name="wallet" color="darkred" size={30} />
+                  <Entypo name="wallet" color="white" size={30} />
                 </TouchableOpacity>
 
                 <TouchableOpacity
@@ -540,7 +546,7 @@ function Home({navigation}) {
                       console.log('TotalQuantity is not present or zero');
                     }
                   }}>
-                  <Entypo name="shopping-cart" color="darkred" size={30} />
+                  <Entypo name="shopping-cart" color="white" size={30} />
                   {TotalQuantity > 0 && (
                     <View
                       style={{
@@ -554,7 +560,7 @@ function Home({navigation}) {
                         right: -5,
                         top: -5,
                       }}>
-                      <Text style={{color: 'darkred', fontSize: 12}}>
+                      <Text style={{color: 'white', fontSize: 12}}>
                         {TotalQuantity}
                       </Text>
                     </View>
@@ -563,7 +569,7 @@ function Home({navigation}) {
                 <TouchableOpacity
                   onPress={() => navigation.navigate('Profile')}
                   style={{marginRight: 10}}>
-                  <MaterialIcons name="account-box" color="darkred" size={33} />
+                  <MaterialIcons name="account-box" color="white" size={33} />
                 </TouchableOpacity>
               </View>
             </View>
@@ -579,7 +585,7 @@ function Home({navigation}) {
               }}>
               <TouchableOpacity onPress={() => navigation.navigate('search')}>
                 <Text style={[styles.text, styles.elevation]}>
-                  Search here...
+                  Search 
                 </Text>
 
                 <FontAwesome
@@ -590,6 +596,80 @@ function Home({navigation}) {
                 />
               </TouchableOpacity>
             </View>
+            
+            <View style={{ padding: 10,marginTop: 180 }}>
+  {/* Text for Trending Services */}
+  <Text style={styles.trendingText}>Trending Services</Text>
+
+  {/* Images Row */}
+  <View
+    style={{
+      flexDirection: 'row',
+      justifyContent: 'space-around', // Reduces space between images
+      padding: 10,
+      marginTop: 0, // Adjust this for desired spacing between text and images
+    }}
+  >
+    {/* Image 1 */}
+    <TouchableOpacity
+      onPress={() => {
+        const category = 'Cleaning'; // Define the category
+        console.log('Selected Category:', category); // Log the category
+        setSelectedCategory(category); // Update the selected category
+        toggleModal(); // Handle modal if needed
+        navigation.navigate('CategoryScreen', { category });
+      }}
+    >
+      <Image
+        source={require('../../../assets/new_year_bathroom.jpg')}
+        style={{ width: 75, height: 100, borderRadius: 5 }}
+      />
+    </TouchableOpacity>
+
+    {/* Image 2 */}
+    <TouchableOpacity
+      onPress={() => {
+        const category = 'Pest Control'; // Define the category
+        console.log('Selected Category:', category); // Log the category
+        setSelectedCategory(category); // Update the selected category
+        toggleModal(); // Handle modal if needed
+        navigation.navigate('CategoryScreen', { category });
+      }}
+    >
+      <Image
+        source={require('../../../assets/new_year_pest.jpg')}
+        style={{ width: 75, height: 100, borderRadius: 5 }}
+      />
+    </TouchableOpacity>
+
+    {/* Image 3 */}
+    <TouchableOpacity onPress={() => navigation.navigate('Bottomtab')}>
+      <Image
+        source={require('../../../assets/new_year_pm.jpg')}
+        style={{ width: 75, height: 100, borderRadius: 5 }}
+      />
+    </TouchableOpacity>
+
+    {/* Image 4 */}
+    <TouchableOpacity
+      onPress={() => {
+        const category = 'Pest Control'; // Define the category
+        console.log('Selected Category:', category); // Log the category
+        setSelectedCategory(category); // Update the selected category
+        toggleModal(); // Handle modal if needed
+        navigation.navigate('CategoryScreen', { category });
+      }}
+    >
+      <Image
+        source={require('../../../assets/new_year_offer.jpg')}
+        style={{ width: 75, height: 100, borderRadius: 5 }}
+      />
+    </TouchableOpacity>
+  </View>
+</View>
+
+           </View>
+
             <View style={{backgroundColor: 'white'}}>
               <View style={{}}>
                 <Text
@@ -1241,6 +1321,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: 'white',
+  
   },
   lottie: {
     width: 100,
@@ -1520,5 +1601,26 @@ const styles = StyleSheet.create({
     margin: 3,
     color: '#ffff',
   },
+  video: {
+    position: 'absolute', // Position the video behind content
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    width: '100%',
+    height: '100%',
+    zIndex: -1, // Push the video behind other content
+  },
+
+
+    trendingText: {
+      color: 'white', // Set text color to white
+      fontSize: 18, // Set font size to 18px
+      fontWeight: 'bold', // Optionally make it bold
+      textAlign: 'left', // Center the text
+      marginBottom: 0, // Add some spacing below the text
+      marginLeft: 20, // Add some spacing below the text
+    },
+  
 });
 export default Home;

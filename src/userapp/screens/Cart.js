@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useRef } from 'react';
 import {
   View,
   Text,
@@ -13,6 +13,8 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import {addToCart1, removeMyCartItem, clearCart} from './Redux1/MyCartSlice';
 import {deleteMyCartItem} from './Redux1/MyCartSlice'; // Adjust the path as needed
+import { WebView } from 'react-native-webview';
+import Video from 'react-native-video';
 
 function Cart({navigation}) {
   const dispatch = useDispatch();
@@ -37,9 +39,41 @@ function Cart({navigation}) {
     }
   }, 0);
 
+  
+
   const clear = () => {
     dispatch(clearCart());
   };
+
+  
+    const webViewRef = useRef(null);
+  
+    const [loading, setLoading] = useState(true);
+    
+    // URL for the video
+    const videoUrl = "https://iframe.mediadelivery.net/play/212658/47f4ad74-ee8e-4541-b3d1-ea462987e39b";
+  
+    // Log WebView loading events
+    const handleLoadStart = () => {
+      console.log("WebView started loading");
+      setLoading(true);
+    };
+  
+    const handleLoad = () => {
+      console.log("WebView loaded successfully");
+      setLoading(false);
+    };
+  
+    const handleError = (error) => {
+      console.log("WebView error: ", error);
+      setLoading(false);
+    };
+  
+    const handleHttpError = (error) => {
+      console.log("WebView HTTP error: ", error);
+      setLoading(false);
+    };
+  
 
   return (
     <View style={styles.container}>
@@ -166,6 +200,45 @@ function Cart({navigation}) {
           </Text>
         </View>
       )}
+
+<View style={{ marginTop: 50, alignItems: 'center' }}>
+     
+      <View
+        style={{
+          backgroundColor: 'darkred',
+          paddingVertical: 10,
+          paddingHorizontal: 20,
+          
+          marginBottom: 0, 
+          width: 400,
+        }}
+      >
+        <Text
+          style={{
+            color: 'white',
+            fontSize: 18,
+            fontWeight: 'bold',
+            textAlign: 'center',
+          }}
+        >
+          YEAR END SALE IS NOW LIVE!
+        </Text>
+      </View>
+
+     
+      <Video
+        source={require('../../../assets/painting.webm')}
+        ref={(ref) => {
+          this.player = ref;
+        }}
+        onBuffer={this.onBuffer}
+        onError={this.videoError}
+        style={{ width: 400, height: 224 }}
+        controls={false} 
+        resizeMode="contain"
+        muted={true} 
+      />
+    </View>
       {/* <TouchableOpacity onPress={clear}>
 <Text>clear</Text>
       </TouchableOpacity > */}

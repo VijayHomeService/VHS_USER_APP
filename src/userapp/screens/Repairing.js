@@ -2013,170 +2013,12 @@ function Repairing({navigation}) {
                   ) : (
                     <></>
                   )}
-                  {svideodata.length > 0 ? (
-                    <View>
-                      <Text
-                        style={{
-                          fontSize: 19,
-                          color: 'darkred',
-                          fontWeight: 'bold',
-                          marginTop: 10,
-                        }}>
-                        Thoughtful curations
-                      </Text>
-                      <Text
-                        style={{
-                          fontSize: 15,
-                          color: 'black',
-                          fontWeight: 'bold',
-                          marginTop: 5,
-                        }}>
-                        Of our finest experiences
-                      </Text>
-                    </View>
-                  ) : (
-                    <></>
-                  )}
+                  
 
-                  <View style={{flexDirection: 'row'}}>
-                    <View style={{flex: 0.5}}>
-                      {svideodata[0] ? (
-                        <Pressable onPress={handlePress1}>
-                          <View
-                            style={{
-                              width: '90%',
-                              height: 250,
-                              borderRadius: 10,
-                              justifyContent: 'center',
-                              alignItems: 'center',
-                              backgroundColor: '',
-                            }}>
-                            {isPlaying1 == false ? (
-                              <AntDesign
-                                name="playcircleo"
-                                color={'black'}
-                                size={30}
-                                style={{position: 'absolute', zIndex: 11}}
-                              />
-                            ) : (
-                              <></>
-                            )}
-                            <Video
-                              ref={videoRef1}
-                              source={{
-                                uri: `https://api.vijayhomesuperadmin.in/sVideo/${svideodata[0]?.serviceVideo}`,
-                              }}
-                              resizeMode="cover"
-                              volume={1.0}
-                              muted={!isPlaying1}
-                              paused={!isPlaying1}
-                              repeat={true}
-                              playWhenInactive={false}
-                              useTextureView={false}
-                              playInBackground={true}
-                              disableFocus={true}
-                              style={{
-                                width: '100%',
-                                height: '100%',
-                                borderRadius: 10,
-                                marginTop: 10,
-                              }}
-                            />
-                          </View>
-                        </Pressable>
-                      ) : (
-                        <></>
-                      )}
-                    </View>
-                    <View style={{flex: 0.5}}>
-                      {svideodata[1] ? (
-                        <Pressable onPress={handlePress2}>
-                          <View
-                            style={{
-                              width: '90%',
-                              height: 250,
-                              borderRadius: 10,
-                              justifyContent: 'center',
-                              alignItems: 'center',
-                              backgroundColor: '',
-                            }}>
-                            {isPlaying2 == false ? (
-                              <AntDesign
-                                name="playcircleo"
-                                color={`black`}
-                                size={30}
-                                style={{position: 'absolute', zIndex: 11}}
-                              />
-                            ) : (
-                              <></>
-                            )}
-                            <Video
-                              ref={videoRef2}
-                              source={{
-                                uri: `https://api.vijayhomesuperadmin.in/sVideo/${svideodata[1]?.serviceVideo}`,
-                              }}
-                              resizeMode="cover"
-                              volume={1.0}
-                              muted={!isPlaying2}
-                              paused={!isPlaying2}
-                              repeat={true}
-                              useTextureView={false}
-                              playInBackground={true}
-                              disableFocus={true}
-                              playWhenInactive={false}
-                              style={{
-                                width: '100%',
-                                height: '100%',
-                                borderRadius: 10,
-                                marginTop: 10,
-                                backgroundColor: `rgba(0, 0, 0, ${
-                                  isPlaying2 ? 0 : 0.5
-                                })`,
-                              }}
-                            />
-                          </View>
-                        </Pressable>
-                      ) : (
-                        <></>
-                      )}
-                    </View>
-                  </View>
+                 
 
-                  {ReviewVideodata.length > 0 ? (
-                    <Text
-                      style={{
-                        fontSize: 16,
-                        color: 'black',
-                        fontWeight: 'bold',
-                        marginTop: 50,
-                      }}>
-                      Testimonial Videos
-                    </Text>
-                  ) : (
-                    <></>
-                  )}
-
-                  {ReviewVideodata &&
-                    ReviewVideodata.map((i, index) => {
-                      return (
-                        <View
-                          key={index}
-                          style={{
-                            borderRadius: 10,
-                            overflow: 'hidden',
-                            marginTop: 20,
-                          }}>
-                          <YoutubeIframe
-                            videoId={getVideoIdFromLink(i.Links)}
-                            height={190}
-                            width="100%"
-                            play={true}
-                            resizeMode="cover"
-                            controls={1}
-                          />
-                        </View>
-                      );
-                    })}
+                 
+               
 
                   {feqdata.length > 0 ? (
                     <View>
@@ -2404,39 +2246,110 @@ function Repairing({navigation}) {
               </View>
             </ScrollView>
           </Modal>
-          <Modal isVisible={LoginModal}>
-            <View style={styles.modalContainer}>
-              <View style={styles.modalContent}>
-                <TouchableOpacity
-                  style={styles.closeButton}
-                  onPress={() => setLoginModal(false)}>
-                  <AntDesign name="close" size={20} color="lightgrey" />
-                </TouchableOpacity>
-                <Text style={styles.title}>MOBILE NUMBER</Text>
-                <Text style={styles.subtitle}>
-                  Please enter your mobile number
-                </Text>
-                <TextInput
-                  style={[styles.input, {color: 'black'}]}
-                  keyboardType="numeric"
-                  maxLength={10}
-                  onChangeText={text => setmainContact(text)}
-                  value={mainContact}
-                  placeholder="00000 00000"
-                  underlineColorAndroid="transparent"
-                />
-                <TouchableOpacity style={styles.submitButton} onPress={sendOTP}>
-                  <Text style={styles.submitButtonText}>
-                    {otpLoader ? (
-                      <ActivityIndicator size="large" color={'white'} />
-                    ) : (
-                      'SUBMIT'
-                    )}
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-          </Modal>
+          <Modal
+  isVisible={LoginModal}
+  onBackdropPress={() => setLoginModal(false)} 
+  style={{ justifyContent: 'center', alignItems: 'center' }}
+>
+  <View
+    style={{
+      backgroundColor: 'white',
+      borderRadius: 10,
+      padding: 20,
+      width: '90%',
+    }}
+  >
+    <TouchableOpacity
+      style={{
+        alignSelf: 'flex-end',
+        padding: 5,
+      }}
+      onPress={() => setLoginModal(false)}
+    >
+      <AntDesign name="close" size={20} color="lightgrey" />
+    </TouchableOpacity>
+    <Text
+      style={{
+        fontSize: 16,
+        color: 'black',
+        fontWeight: 'bold',
+        marginBottom: 10,
+      }}
+    >
+      Enter mobile number to continue
+    </Text>
+    <TextInput
+      style={{
+        borderWidth: 1,
+        borderColor: 'grey',
+        borderRadius: 5,
+        height: 45,
+        marginBottom: 20,
+        paddingHorizontal: 10,
+        color: 'black',
+      }}
+      keyboardType="numeric"
+      maxLength={10}
+      onChangeText={text => setmainContact(text)}
+      value={mainContact}
+      placeholder="Enter Mobile Number"
+      placeholderTextColor="grey"
+    />
+    <TouchableOpacity
+      onPress={sendOTP}
+      style={{
+        backgroundColor: '#ff465e',
+        paddingVertical: 10,
+        borderRadius: 5,
+        alignItems: 'center',
+      }}
+    >
+      <Text
+        style={{
+          color: 'white',
+          fontSize: 16,
+          fontWeight: 'bold',
+        }}
+      >
+        {otpLoader ? (
+          <ActivityIndicator size="small" color={'white'} />
+        ) : (
+          'Continue'
+        )}
+      </Text>
+    </TouchableOpacity>
+    
+    <View
+      style={{
+        marginTop: 20,
+        alignItems: 'center',
+      }}
+    >
+      <Text style={{ fontSize: 14, color: '#999' }}>
+        Why to choose{' '}
+        <Text style={{ color: 'darkred' }}>Our Services?</Text>
+      </Text>
+      <View style={{ marginTop: 10 }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 5 }}>
+          <FontAwesome name="check-circle" size={14} color="green" style={{ marginRight: 5 }} />
+          <Text style={{ fontSize: 14, color: 'black' }}>Lowest Price Guaranteed</Text>
+        </View>
+        <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 5 }}>
+          <FontAwesome name="check-circle" size={14} color="green" style={{ marginRight: 5 }} />
+          <Text style={{ fontSize: 14, color: 'black' }}>Free Reschedule</Text>
+        </View>
+        <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 5 }}>
+          <FontAwesome name="check-circle" size={14} color="green" style={{ marginRight: 5 }} />
+          <Text style={{ fontSize: 14, color: 'black' }}>5 Star Rated Team</Text>
+        </View>
+        <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 5 }}>
+          <FontAwesome name="check-circle" size={14} color="green" style={{ marginRight: 5 }} />
+          <Text style={{ fontSize: 14, color: 'black' }}>Dedicated Customer Support</Text>
+        </View>
+      </View>
+    </View>
+  </View>
+</Modal>
         </View>
       )}
     </View>

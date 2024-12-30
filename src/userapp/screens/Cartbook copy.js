@@ -82,9 +82,9 @@ function Cartbook({navigation}) {
       }
     }, 0);
 
-    setCarttotal(newCarttotal); // Update the state with the new Carttotal
-    setCouponDiscount(newCarttotal); // Optionally, update couponDiscount with the new Carttotal
-  }, [MyCartItmes]); // Trigger useEffect when MyCartItems changes
+    setCarttotal(newCarttotal); 
+    setCouponDiscount(newCarttotal); 
+  }, [MyCartItmes]); 
 
   const Carttotal1 = MyCartItmes.reduce((accumulator, item) => {
     const offerPrice = parseFloat(item?.planPrice);
@@ -141,10 +141,10 @@ function Cartbook({navigation}) {
   useEffect(() => {
     const timer = setTimeout(() => {
       setUseLortti(false);
-    }, 2000); // 2 seconds
+    }, 2000); 
 
     return () => clearTimeout(timer);
-  }, [isSelected]); // Include isSelected in dependencies to trigger the effect when it changes
+  }, [isSelected]); 
   const [showWebView, setShowWebView] = useState(false);
   const [paymentUrl, setPaymentUrl] = useState('');
   const [time, setTime] = useState(false);
@@ -523,14 +523,14 @@ function Cartbook({navigation}) {
     fetchData();
   }, []);
 
-  const [suman, setSuman] = useState('');
+  const [vijay, setVijay] = useState('');
   useEffect(() => {
     // Fetch user data from AsyncStorage and parse it
     const fetchData1 = async () => {
       try {
         const userData = await AsyncStorage.getItem('usedVoucherCodes');
         if (userData) {
-          setSuman(JSON.parse(userData));
+          setVijay(JSON.parse(userData));
         }
       } catch (error) {
         console.error('Error fetching user data: ', error);
@@ -2985,7 +2985,7 @@ function Cartbook({navigation}) {
                             <Text style={styles.mastercardtext}>Pay now</Text>
                           </TouchableOpacity>
                           <TouchableOpacity
-                            style={styles.paymentrow}
+                            style={styles.paymentrow3}
                             onPress={addtreatmentdetails}>
                             <Image
                               source={require('../../../assets/cash.png')}
